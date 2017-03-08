@@ -22,6 +22,9 @@
         <activity
             android:name=".EventsActivity"
             android:label="Events" />
+        <activity
+            android:name=".SignupActivity"
+            android:label="join us for happiness..." />
     </application>
 
 </manifest>

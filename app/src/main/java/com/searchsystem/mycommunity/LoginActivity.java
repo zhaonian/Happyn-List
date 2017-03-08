@@ -1,10 +1,13 @@
 package com.searchsystem.mycommunity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.searchsystem.mycommunity.ClientServerConnector;
 
@@ -12,6 +15,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.RunnableFuture;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -42,16 +46,32 @@ public class LoginActivity extends AppCompatActivity {
 
         JSONObject jsonObject = clientServerConnector.getJsonObject("LogIn", map);
         try {
-            if ((boolean) jsonObject.get("loggedIn") == true) {
+            if ((boolean) jsonObject.get("loggedIn")) {
                 Intent goToIntent = new Intent(this, EventsActivity.class);
                 startActivity(goToIntent);
-                System.out.println("in");
             } else {
-                System.out.println("out");
-
+                this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "Invalid email/password", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void onSignUpClick(View view) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                signup();
+            }
+        }).start();
+    }
+
+    protected void signup() {
+        Intent goToIntent = new Intent(this, SignupActivity.class);
+        startActivity(goToIntent);
     }
 }
