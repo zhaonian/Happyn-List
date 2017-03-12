@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyCommunity</string>
+    <string name="app_name">Happyn List</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
@@ -14,5 +14,6 @@
         completions."
     </string>
     <string name="sign_up"><u><i>sign up</i></u></string>
+    <string name="facebook_app_id">335810550149397</string>
 
 </resources>

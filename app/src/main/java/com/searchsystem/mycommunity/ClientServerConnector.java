@@ -31,6 +31,8 @@ public class ClientServerConnector {
             URL url = new URL(tempURLString.substring(0, tempURLString.length() - 1));
             this.urlConnection = (HttpURLConnection) url.openConnection();
 
+            System.out.println("-----" + url);
+
             InputStream in = new BufferedInputStream(urlConnection.getInputStream()); // get the stream from servlet
             BufferedReader streamReader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             StringBuilder responseStrBuilder = new StringBuilder();
