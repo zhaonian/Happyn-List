@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <Button
+        android:id="@+id/yelp"
+        android:onClick="onYelpClick"
+        android:layout_width="373dp"
+        android:layout_height="wrap_content"
+        android:text="See nearby Yelp business!"
+        android:background="#f44b42"
+        />
+
+    <Button
+        android:id="@+id/search_engine"
+        android:onClick="onSearchEngineClick"
+        android:layout_width="373dp"
+        android:layout_height="wrap_content"
+        android:text="ICS Search Engine -=(づ′▽`)づ try me~"
+        android:background="#ccffcc"
+        />
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

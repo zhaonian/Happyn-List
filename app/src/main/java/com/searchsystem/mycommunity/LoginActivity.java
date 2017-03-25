@@ -1,6 +1,5 @@
 package com.searchsystem.mycommunity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -31,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         if (AccessToken.getCurrentAccessToken() != null) {
-            Intent eventIntent = new Intent(getApplicationContext(), EventsActivity.class);
+            Intent eventIntent = new Intent(getApplicationContext(), FBEventsActivity.class);
             eventIntent.putExtra("accessToken", AccessToken.getCurrentAccessToken().getToken());
             startActivity(eventIntent);
         } else {
@@ -42,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
                 public void onSuccess(LoginResult loginResult) {
                     System.out.println("success");
                     // accessToken
-                    Intent eventIntent = new Intent(getApplicationContext(), EventsActivity.class);
+                    Intent eventIntent = new Intent(getApplicationContext(), FBEventsActivity.class);
                     String accessToken = loginResult.getAccessToken().getToken();
                     eventIntent.putExtra("accessToken", accessToken);
                     // make a toast here

@@ -1,91 +1,122 @@
 package com.searchsystem.mycommunity;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import org.json.JSONObject;
+import com.yelp.fusion.client.connection.YelpFusionApi;
+import com.yelp.fusion.client.connection.YelpFusionApiFactory;
+import com.yelp.fusion.client.models.Business;
+import com.yelp.fusion.client.models.SearchResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static com.searchsystem.mycommunity.R.id.listView;
+
 /**
- * Created by Luan on 3/5/17.
+ * Created by Luan on 3/14/17.
  */
 
-public class EventsActivity extends AppCompatActivity {
-    ListView listView;
+public class EventsActivity  extends AppCompatActivity {
 
-    String accessToken; // FB user access token
+    private String appId = "OeXJXCJfKSc5oHtw-zUayA";
+    private String appSecret = "vz3vkeqDP2QDJnCu9E95HanKIZL81fcC6MGOeRvo9AAhxlylgl0xHQlEYyFVFgZW";
 
-    ArrayList<Event> EventArray;
+    private YelpFusionApiFactory apiFactory = null;
+    private YelpFusionApi yelpFusionApi = null;
+    private TextView results;
+    private ArrayList<Business> businesses;
+    private final ArrayList<Business> b = new ArrayList();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_events);
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            accessToken = extras.getString("accessToken");
-        }
+        // a list of yelp events
 
-        listView = (ListView) findViewById(R.id.listView);
+        results = (TextView) findViewById(R.id.singleEvent);
+        Toast.makeText(this, "hello", Toast.LENGTH_LONG).show();
 
-        new getFBEventsJson().execute();
+        new getYelpResults().execute();
     }
 
-    private class getFBEventsJson extends AsyncTask<Void, Void, ArrayList<String>> {
-
+    private class getYelpResults extends AsyncTask<Object, Object, Void> {
         @Override
-        protected ArrayList<String> doInBackground(Void... params) {
-            ClientServerConnector clientServerConnector = new ClientServerConnector();
-            Map<String, String> map = new HashMap<>();
-
-            String latitude = "40.711217064583";    // pass in current lat from GPS from Seth
-            String longitude = "-73.966384349735";  // pass in current lng from GPS from Seth
-            map.put("lat", latitude);
-            map.put("lng", longitude);
-            map.put("accessToken", accessToken);
-
-            JSONObject fbEventsJson = clientServerConnector.getJsonObject("FBEvents", map);
-
-            Event fbEvent = new Event();
-            EventArray = fbEvent.getEventsFromJson(fbEventsJson);
-
-            ArrayList<String> events = new ArrayList<>();
-            for (Event event : EventArray) {
-                events.add(event.getName());
+        protected Void doInBackground(Object... voids) {
+            apiFactory = new YelpFusionApiFactory();
+            try {
+                yelpFusionApi = apiFactory.createAPI(appId, appSecret);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-//            Pass in the yelp events' names from Amit into the events ArrayList here:
-//            for (Event event : yelp events array){
-//                events.add(event.getName());
-//            }
-            return events;
-        }
 
-        @Override
-        protected void onPostExecute(ArrayList<String> strings) {
-            ArrayAdapter<String> adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, strings);
-            listView.setAdapter(adapter);
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            Map<String, String> params = new HashMap<>();
+
+            // general params, NEED TO MAKE DYNAMIC
+            params.put("term", "shopping malls");
+            params.put("latitude", "40.711217064583");
+            params.put("longitude", "-73.966384349735");
+
+            Call<SearchResponse> call = yelpFusionApi.getBusinessSearch(params);
+
+            Callback<SearchResponse> callback = new Callback<SearchResponse>() {
+                @Override
+                public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
+                    SearchResponse searchResponse = response.body();
+                    ArrayList<Business> businesses = searchResponse.getBusinesses();
+                    int totalNumberOfResult = searchResponse.getTotal();
+                    String businessName = businesses.get(0).getName();
+//                    results.setText(businessName + "\n" + totalNumberOfResult);
+                    Log.i("Values", businessName);
+                    System.out.print(businessName);
+                    for (int i = 0; i < businesses.size(); i++) {
+                        b.add(businesses.get(i));
+                        Log.i("object:", businesses.get(i).getName() + " " + businesses.get(i).getLocation());
+                    }
+                    return;
+                }
 
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    String eventName = listView.getItemAtPosition(position).toString();
-                    Intent singleFBEvent = new Intent(getApplicationContext(), EventPageActivity.class);
-                    Event fbEvent = new Event();
-                    Event event = fbEvent.getFBeventByName(EventArray, eventName);
-                    singleFBEvent.putExtra("event", event); // better use Parcelable
-                    startActivity(singleFBEvent);
+                public void onFailure(Call<SearchResponse> call, Throwable t) {
+                    // HTTP error happened, do something to handle it.
+                    Log.i("Values", "Error");
+                    System.out.print("Error");
+
+                    return;
                 }
-            });
+            };
+            call.enqueue(callback);
+
+            return null;
         }
+
+//        @Override
+//        protected void onPostExecute(Void aVoid) {
+//            ArrayAdapter<String> adapter = new ArrayAdapter(getApplicationContext(), android.R.layout.simple_list_item_1, strings);
+//            listView.setAdapter(adapter);
+//            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//                @Override
+//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//                }
+//            }
+//        }
+//    }
+
     }
 }

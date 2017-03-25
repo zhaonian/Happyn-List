@@ -27,6 +27,5 @@ public class EventPageActivity extends AppCompatActivity {
                 "End Time: " + event.getEndTime() + "\n" +
                 "Category: " + event.getCategory() + "\n" +
                 "Description: " + event.getDescription());
-
     }
 }

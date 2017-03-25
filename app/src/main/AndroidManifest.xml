@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".EventsActivity"
+            android:name=".FBEventsActivity"
             android:label="Events" />
         <activity
             android:name=".SignupActivity"
@@ -31,6 +31,11 @@
         <activity
             android:name=".EventPageActivity"
             android:label="Event" />
+        <activity
+            android:name=".EventsActivity"
+            android:label="Event" />
+        <activity
+            android:name=".SearchEngineActivity"
+            android:label="ICS Search Engine" />
     </application>
-
 </manifest>
